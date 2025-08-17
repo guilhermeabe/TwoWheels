@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "TwoWheels.Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7277"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "containerRunArguments": "--init",
+      "httpPort": 33099,
+      "useSSL": false
+    }
+  }
+}
