@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.3.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.0.2" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.5" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.OpenApi" Version="1.5.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
 	<PackageReference Include="MediatR" Version="13.0.0" />
 	<PackageReference Include="MongoDB.Driver" Version="3.4.2" />
@@ -36,9 +37,6 @@
   </ItemGroup>
 	<ItemGroup>
 		<Folder Include="Infra\" />
-		<Folder Include="Services\Api\Motorcycle\" />
-		<Folder Include="Services\Api\Deliverer\" />
-		<Folder Include="Services\Api\Rental\" />
 		<Folder Include="Services\Events\" />
 		<Folder Include="Shared\" />
 	</ItemGroup>
