@@ -33,24 +33,51 @@ namespace TwoWheels.Functions.Services.Api.Motorcycle
             try
             {
                 var body = await req.ReadAsStringAsync();
-                var command = JsonSerializer.Deserialize<CreateMotorcycleCommand>(body ?? "{}");
 
-                if (command == null)
+                if (string.IsNullOrWhiteSpace(body))
                 {
                     var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteStringAsync("Invalid request body");
+                    await badResponse.WriteAsJsonAsync(new
+                    {
+                        mensagem = "Dados inválidos"
+                    });
+                    return badResponse;
+                }
+
+                var command = JsonSerializer.Deserialize<CreateMotorcycleCommand>(body);
+                if (command == null ||
+                    string.IsNullOrWhiteSpace(command.Id) ||
+                    string.IsNullOrWhiteSpace(command.Model) ||
+                    string.IsNullOrWhiteSpace(command.LicensePlate) ||
+                    command.Year <= 0)
+                {
+                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                    await badResponse.WriteAsJsonAsync(new
+                    {
+                        mensagem = "Dados inválidos"
+                    });
                     return badResponse;
                 }
 
                 var result = await _mediator.Send(command);
 
-                var response = req.CreateResponse(result.IsSuccess ? HttpStatusCode.Created : HttpStatusCode.BadRequest);
+                if (!result.IsSuccess)
+                {
+                    var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                    await errorResponse.WriteAsJsonAsync(new
+                    {
+                        mensagem = "Dados inválidos"
+                    });
+                    return errorResponse;
+                }
+
+                var response = req.CreateResponse(HttpStatusCode.Created);
                 await response.WriteAsJsonAsync(new
                 {
-                    success = result.IsSuccess,
-                    message = result.Message,
-                    data = result.Data,
-                    errors = result.Errors
+                    identificador = command.Id,
+                    ano = command.Year,
+                    modelo = command.Model,
+                    placa = command.LicensePlate
                 });
 
                 return response;
@@ -58,8 +85,11 @@ namespace TwoWheels.Functions.Services.Api.Motorcycle
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating motorcycle");
-                var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
-                await errorResponse.WriteStringAsync("Internal server error");
+                var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                await errorResponse.WriteAsJsonAsync(new
+                {
+                    mensagem = "Dados inválidos"
+                });
                 return errorResponse;
             }
         }

@@ -39,14 +39,16 @@ namespace TwoWheels.Functions.Services.Api.Motorcycle
 
                 var result = await _mediator.Send(query);
 
-                var response = req.CreateResponse(HttpStatusCode.OK);
-                await response.WriteAsJsonAsync(new
+                var motorcyclesResponse = result.Data?.Select(m => new
                 {
-                    success = result.IsSuccess,
-                    message = result.Message,
-                    data = result.Data,
-                    errors = result.Errors
-                });
+                    identificador = m.Id,
+                    ano = m.Year,
+                    modelo = m.Model,
+                    placa = m.LicensePlate
+                }).ToList();
+
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                await response.WriteAsJsonAsync(motorcyclesResponse);
 
                 return response;
             }

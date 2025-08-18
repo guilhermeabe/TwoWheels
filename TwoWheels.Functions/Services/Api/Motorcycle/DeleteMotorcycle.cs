@@ -32,21 +32,26 @@ namespace TwoWheels.Functions.Services.Api.Motorcycle
                 var command = new DeleteMotorcycleCommand { Id = id };
                 var result = await _mediator.Send(command);
 
-                var response = req.CreateResponse(result.IsSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-                await response.WriteAsJsonAsync(new
+                if (!result.IsSuccess)
                 {
-                    success = result.IsSuccess,
-                    message = result.Message,
-                    errors = result.Errors
-                });
-
+                    var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                    await errorResponse.WriteAsJsonAsync(new
+                    {
+                        mensagem = "Dados inválidos"
+                    });
+                    return errorResponse;
+                }
+                var response = req.CreateResponse(HttpStatusCode.OK);
                 return response;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting motorcycle");
-                var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
-                await errorResponse.WriteStringAsync("Internal server error");
+                var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                await errorResponse.WriteAsJsonAsync(new
+                {
+                    mensagem = "Dados inválidos"
+                });
                 return errorResponse;
             }
         }

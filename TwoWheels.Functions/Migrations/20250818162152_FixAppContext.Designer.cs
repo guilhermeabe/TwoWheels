@@ -12,8 +12,8 @@ using TwoWheels.Functions.Infra.Repositories.Data;
 namespace TwoWheels.Functions.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250818004052_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250818162152_FixAppContext")]
+    partial class FixAppContext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
