@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using TwoWheels.Functions.Infra.Repositories;
 using TwoWheels.Functions.Infra.Repositories.Data;
 using TwoWheels.Functions.Infra.Repositories.Interfaces;
+using TwoWheels.Functions.Services.Storage;
+using TwoWheels.Functions.Services.Storage.Interfaces;
 using TwoWheels.Functions.Shared.Decorator;
 
 var host = new HostBuilder()
@@ -24,6 +26,12 @@ var host = new HostBuilder()
 
         // Repositories
         services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
+        services.AddScoped<IDelivererRepository, DelivererRepository>();
+
+        // Storage
+        services.AddScoped<IStorageService, LocalStorageService>();
+
+        // Decorators
         services.Decorate(typeof(IRequestHandler<,>), typeof(LoggingDecorator<,>));
     })
     .Build();
