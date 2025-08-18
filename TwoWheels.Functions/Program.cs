@@ -27,6 +27,7 @@ var host = new HostBuilder()
         // Repositories
         services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
         services.AddScoped<IDelivererRepository, DelivererRepository>();
+        services.AddScoped<IRentalRepository, RentalRepository>();
 
         // Storage
         services.AddScoped<IStorageService, LocalStorageService>();
