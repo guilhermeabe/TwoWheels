@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: twowheels-postgres
+    environment:
+      POSTGRES_DB: twowheels
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - twowheels-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: twowheels-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    networks:
+      - twowheels-network
+
+volumes:
+  postgres_data:
+
+networks:
+  twowheels-network:
+    driver: bridge
