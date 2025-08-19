@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -13,13 +14,13 @@ namespace TwoWheels.Functions.Services.Api.Deliverer
 {
     public class PostCnhDeliverer
     {
-        private readonly ILogger<PostCnhDeliverer> _logger;
         private readonly IMediator _mediator;
+        private readonly ILogger<PostCnhDeliverer> _logger;
 
-        public PostCnhDeliverer(ILogger<PostCnhDeliverer> logger, IMediator mediator)
+        public PostCnhDeliverer(IMediator mediator, ILogger<PostCnhDeliverer> logger)
         {
-            _logger = logger;
             _mediator = mediator;
+            _logger = logger;
         }
 
         [OpenApiOperation(operationId: "PostCnhDeliverer", tags: ["Deliverer"], Description = "Upload CNH image for deliverer", Visibility = OpenApiVisibilityType.Important)]
@@ -28,102 +29,47 @@ namespace TwoWheels.Functions.Services.Api.Deliverer
         {
             _logger.LogInformation("Updating CNH image for deliverer {DelivererId}", id);
 
+            UpdateDelivererCnhImageCommand? command;
+
             try
             {
-                var body = await req.ReadAsStringAsync();
-
-                if (string.IsNullOrWhiteSpace(body))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                var command = JsonSerializer.Deserialize<UpdateDelivererCnhImageCommand>(body);
-
-                if (command == null || string.IsNullOrWhiteSpace(command.CnhImageBase64))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                if (string.IsNullOrWhiteSpace(id))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                if (!IsValidBase64(command.CnhImageBase64))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                command.Id = id;
-
-                var result = await _mediator.Send(command);
-
-                if (!result.IsSuccess)
-                {
-                    var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await errorResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return errorResponse;
-                }
-
-                var response = req.CreateResponse(HttpStatusCode.OK);
-                await response.WriteAsJsonAsync(new
-                {
-                    mensagem = "Imagem da CNH atualizada com sucesso"
-                });
-
-                return response;
+                command = await JsonSerializer.DeserializeAsync<UpdateDelivererCnhImageCommand>(
+                    req.Body,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating CNH image for deliverer {DelivererId}", id);
-                var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                await errorResponse.WriteAsJsonAsync(new
-                {
-                    mensagem = "Dados inválidos"
-                });
-                return errorResponse;
+                _logger.LogWarning(ex, "Invalid JSON");
+                return await CreateBadRequest(req);
             }
+
+            if (command is null)
+                return await CreateBadRequest(req);
+
+            command.Id = id;
+
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning("Failed to update CNH image for deliverer {DelivererId}: {Error}", id, result);
+                return await CreateBadRequest(req);
+            }
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(new
+            {
+                mensagem = "Imagem da CNH atualizada com sucesso"
+            });
+
+            return response;
         }
 
-        private static bool IsValidBase64(string base64String)
+        private static async Task<HttpResponseData> CreateBadRequest(HttpRequestData req)
         {
-            try
-            {
-                var base64Data = base64String;
-                if (base64String.Contains(','))
-                    base64Data = base64String.Split(',')[1];
-
-                Convert.FromBase64String(base64Data);
-
-                return base64Data.Length > 10;
-            }
-            catch
-            {
-                return false;
-            }
+            var res = req.CreateResponse(HttpStatusCode.BadRequest);
+            await res.WriteAsJsonAsync(new { mensagem = "Dados inválidos" });
+            return res;
         }
     }
 }

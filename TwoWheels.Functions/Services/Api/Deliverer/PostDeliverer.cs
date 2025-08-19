@@ -13,124 +13,61 @@ namespace TwoWheels.Functions.Services.Api.Deliverer
 {
     public class PostDeliverer
     {
-        private readonly ILogger<PostDeliverer> _logger;
         private readonly IMediator _mediator;
+        private readonly ILogger<PostDeliverer> _logger;
 
-        public PostDeliverer(ILogger<PostDeliverer> logger, IMediator mediator)
+        public PostDeliverer(IMediator mediator, ILogger<PostDeliverer> logger)
         {
-            _logger = logger;
             _mediator = mediator;
+            _logger = logger;
         }
 
-        [OpenApiOperation(operationId: "PostDeliverer", tags: ["Deliverer"], Description = "Create a new deliverer", Visibility = OpenApiVisibilityType.Important)]
         [Function("PostDeliverer")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "entregadores")] HttpRequestData req)
+        public async Task<HttpResponseData> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "entregadores")] HttpRequestData req)
         {
             _logger.LogInformation("Creating deliverer");
 
+            CreateDelivererCommand? command;
             try
             {
-                var body = await req.ReadAsStringAsync();
-
-                if (string.IsNullOrWhiteSpace(body))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                var command = JsonSerializer.Deserialize<CreateDelivererCommand>(body);
-
-                if (command == null ||
-                    string.IsNullOrWhiteSpace(command.Id) ||
-                    string.IsNullOrWhiteSpace(command.Name) ||
-                    string.IsNullOrWhiteSpace(command.Cnpj) ||
-                    string.IsNullOrWhiteSpace(command.CnhNumber) ||
-                    string.IsNullOrWhiteSpace(command.CnhTypeString) ||
-                    command.BirthDate == default)
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                if (command.Cnpj.Length != 14 || !command.Cnpj.All(char.IsDigit))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                if (command.CnhNumber.Length != 11 || !command.CnhNumber.All(char.IsDigit))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                if (!IsValidCnhType(command.CnhTypeString))
-                {
-                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await badResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return badResponse;
-                }
-
-                var result = await _mediator.Send(command);
-
-                if (!result.IsSuccess)
-                {
-                    var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    await errorResponse.WriteAsJsonAsync(new
-                    {
-                        mensagem = "Dados inválidos"
-                    });
-                    return errorResponse;
-                }
-
-                var response = req.CreateResponse(HttpStatusCode.Created);
-                await response.WriteAsJsonAsync(new
-                {
-                    identificador = command.Id,
-                    nome = command.Name,
-                    cnpj = command.Cnpj,
-                    data_nascimento = command.BirthDate,
-                    numero_cnh = command.CnhNumber,
-                    tipo_cnh = command.CnhTypeString
-                });
-
-                return response;
+                command = await JsonSerializer.DeserializeAsync<CreateDelivererCommand>(
+                    req.Body,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating deliverer");
-                var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                await errorResponse.WriteAsJsonAsync(new
-                {
-                    mensagem = "Dados inválidos"
-                });
-                return errorResponse;
+                _logger.LogWarning(ex, "Invalid JSON");
+                return await CreateBadRequest(req);
             }
+
+            if (command is null)
+                return await CreateBadRequest(req);
+
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+                return await CreateBadRequest(req);
+
+            var response = req.CreateResponse(HttpStatusCode.Created);
+            await response.WriteAsJsonAsync(new
+            {
+                identificador = command.Id,
+                nome = command.Name,
+                cnpj = command.Cnpj,
+                data_nascimento = command.BirthDate,
+                numero_cnh = command.CnhNumber,
+                tipo_cnh = command.CnhTypeString
+            });
+
+            return response;
         }
 
-        private static bool IsValidCnhType(string cnhType)
+        private static async Task<HttpResponseData> CreateBadRequest(HttpRequestData req)
         {
-            var validTypes = new[] { "A", "B", "AB", "A+B" };
-            return validTypes.Contains(cnhType.ToUpperInvariant());
+            var res = req.CreateResponse(HttpStatusCode.BadRequest);
+            await res.WriteAsJsonAsync(new { mensagem = "Dados inválidos" });
+            return res;
         }
     }
 }
