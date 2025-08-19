@@ -4,7 +4,8 @@ Documentação básica e coesa do projeto.
 
 ## 1. Visão Geral
 TwoWheels foi pensado para ser uma aplicação .NET Functions para implementar endpoints de API's + Events,
-por isso adotei um estilo híbrido (síncrono + orientado a eventos) para suportar evolução e escalabilidade.
+por isso adotei um estilo híbrido (síncrono + orientado a eventos) para suportar evolução e escalabilidade. 
+A API segue a exata documentação do swagger definida.
 
 ## 2. Arquitetura (Visão Simplificada)
 
@@ -154,7 +155,7 @@ Foram feitos testes:
 ## 10. Resumo
 A arquitetura favorece escalabilidade horizontal (processamento assíncrono), evolução modular e observabilidade básica. Testes concentram-se em áreas críticas (validação e fluxo deliverer) para demonstrar qualidade sem inflar o escopo de um MVP.
 
-## 11. Em um projeto real o que mais eu implementaria... caso eu fosse contrato rsrs 🤭:
+## 11. Em um projeto real o que mais eu implementaria... caso eu fosse contratado rsrs 🤭:
 - Padronizar contratos de resposta (envelopes, códigos).
 - Implementar soft delete (flag IsActive).
 - Health checks + métricas/dashboards.
