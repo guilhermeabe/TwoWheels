@@ -1,7 +1,5 @@
 # TwoWheels
 
-Documentação básica e coesa do projeto.
-
 ## 1. Visão Geral
 TwoWheels foi pensado para ser uma aplicação .NET Functions para implementar endpoints de API's + Events,
 por isso adotei um estilo híbrido (síncrono + orientado a eventos) para suportar evolução e escalabilidade. 
