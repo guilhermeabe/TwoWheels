@@ -23,8 +23,7 @@ namespace TwoWheels.Functions.Services.Api.Motorcycle
             _mediator = mediator;
         }
 
-        [OpenApiOperation(operationId: "GetMotorcycles", tags: ["Motorcycles"], Description = "Get by param or list all Motorcycles", Visibility = OpenApiVisibilityType.Important)]
-        [OpenApiParameter(name: "id", In = ParameterLocation.Query, Required = false, Type = typeof(string), Description = "Id/license plate of motorcycle")]
+        [OpenApiOperation(operationId: "GetMotorcycles", tags: ["Motorcycle"], Description = "Get by param or list all Motorcycles", Visibility = OpenApiVisibilityType.Important)]
         [Function("GetMotorcycles")]
         public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "motos")] HttpRequestData req)
         {
@@ -33,9 +32,6 @@ namespace TwoWheels.Functions.Services.Api.Motorcycle
             try
             {
                 var query = new GetMotorcyclesQuery();
-
-                var queryParams = HttpUtility.ParseQueryString(req.Url.Query);
-                query.LicensePlate = queryParams["id"];
 
                 var result = await _mediator.Send(query);
 
