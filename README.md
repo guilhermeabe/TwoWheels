@@ -92,7 +92,6 @@ docker-compose up -d
 ### 6.2 Criar migração e aplicar no PostgreSQL
 (Execute no projeto onde está o DbContext)
 ```
-dotnet ef migrations add InitialCreate
 dotnet ef database update --connection "Host=localhost;Port=5432;Database=twowheels;Username=admin;Password=admin123;"
 ```
 
