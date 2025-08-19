@@ -112,8 +112,7 @@ Criar fila:
 - Configurações padrão (durable, etc.)
 
 ### 6.5 Executar a aplicação
-Iniciar a API (`dotnet run`) e/ou Azure Functions (caso em projeto separado).
-
+Iniciar a API (`dotnet run`).
 Testar criação de motocicleta via endpoint (ex.: POST /motorcycles).  
 Verificar:
 - Registro no PostgreSQL
