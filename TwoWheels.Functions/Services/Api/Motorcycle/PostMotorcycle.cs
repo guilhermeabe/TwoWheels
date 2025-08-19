@@ -26,7 +26,8 @@ namespace TwoWheels.Functions.Services.Api.Motorcycle
 
         [OpenApiOperation(operationId: "PostMotorcycle", tags: ["Motorcycle"], Description = "Create a new motorcycle", Visibility = OpenApiVisibilityType.Important)]
         [Function("PostMotorcycle")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "motos")] HttpRequestData req)
+        public async Task<HttpResponseData> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "motos")] HttpRequestData req)
         {
             _logger.LogInformation("Creating motorcycle");
 

@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using TwoWheels.Functions.Infra.Repositories;
 using TwoWheels.Functions.Infra.Repositories.Data;
 using TwoWheels.Functions.Infra.Repositories.Interfaces;
+using TwoWheels.Functions.Services.Events;
+using TwoWheels.Functions.Services.Events.Interfaces;
 using TwoWheels.Functions.Services.Storage;
 using TwoWheels.Functions.Services.Storage.Interfaces;
 using TwoWheels.Functions.Shared.Decorator;
@@ -28,12 +30,16 @@ var host = new HostBuilder()
         services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
         services.AddScoped<IDelivererRepository, DelivererRepository>();
         services.AddScoped<IRentalRepository, RentalRepository>();
+        services.AddScoped<IMongoDbService, MongoDbService>();
 
         // Storage
         services.AddScoped<IStorageService, LocalStorageService>();
 
         // Decorators
         services.Decorate(typeof(IRequestHandler<,>), typeof(LoggingDecorator<,>));
+
+        //Events
+        services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
     })
     .Build();
 
