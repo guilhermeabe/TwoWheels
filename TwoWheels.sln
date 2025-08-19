@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwoWheels.Functions", "TwoWheels.Functions\TwoWheels.Functions.csproj", "{89860866-011F-456F-99D9-CD7CA560EAA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwoWheels.Test", "TwoWheels.Test\TwoWheels.Test.csproj", "{019AC24C-1504-47C0-8187-D6887796527B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{89860866-011F-456F-99D9-CD7CA560EAA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89860866-011F-456F-99D9-CD7CA560EAA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89860866-011F-456F-99D9-CD7CA560EAA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{019AC24C-1504-47C0-8187-D6887796527B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{019AC24C-1504-47C0-8187-D6887796527B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{019AC24C-1504-47C0-8187-D6887796527B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{019AC24C-1504-47C0-8187-D6887796527B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
