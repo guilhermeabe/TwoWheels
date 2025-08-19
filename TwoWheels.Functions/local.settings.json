@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "DefaultConnection": "Host=localhost;Port=5432;Database=twowheels;Username=admin;Password=admin123;",
+    "RabbitMQ_ConnectionString": "amqp://admin:admin123@localhost:5672/",
+    "RabbitMQ_QueueName": "motorcycle-created-queue",
+    "MongoDB_ConnectionString": "mongodb://admin:admin123@localhost:27017",
+    "MongoDB_DatabaseName": "TwoWheelsDb",
+    "MongoDB_NotificationsCollection": "MotorcycleNotifications"
+  }
+}
