@@ -142,7 +142,7 @@ Foram feitos testes:
 | EntityFramework e/ou Dapper | Atendido | Uso de EF (migrations). |
 | Docker e Docker Compose | Atendido | Orquestra PostgreSQL, RabbitMQ, Mongo, etc. |
 | Design Patterns | Atendido | Command, Mediator, Decorator, Singleton (DI). |
-| Documentação | Atendido | README estruturado (este arquivo). |
+| Documentação | Majoritariamente Atendido | README estruturado (este arquivo). Falta documentação detalhada no swagger. |
 | Tratamento de erros | Parcial | Base existente; formalizar middleware / mapeamento de exceções. |
 | Arquitetura e modelagem de dados | Atendido | Separação de responsabilidades + event-driven para notificações. |
 | Código em inglês | Atendido | Nomes de classes, namespaces e membros em inglês. |
@@ -161,4 +161,5 @@ A arquitetura favorece escalabilidade horizontal (processamento assíncrono), ev
 - Políticas de retry / DLQ para falhas no consumo de eventos.
 - Autenticação.
 - CI/CD + Sonar.
+- Detalhamento total do swagger.
 ---
